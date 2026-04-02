@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flight Log Verification</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e3a5f;
+    --accent: #00b4d8;
+    --accent2: #0077b6;
+    --text: #e0eaf8;
+    --text-muted: #6b8cae;
+    --green: #00f5a0;
+    --amber: #f59e0b;
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'Barlow', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* Header */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-icon {
+    width: 32px;
+    height: 32px;
+    color: var(--accent);
+  }
+
+  .header-title {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .header-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    font-family: var(--mono);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    margin-left: auto;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Form container */
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px 16px;
+  }
+
+  /* Section headers */
+  .section {
+    margin-bottom: 8px;
+    margin-top: 24px;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    margin-bottom: 8px;
+  }
+
+  /* Grid layouts */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  /* Field */
+  .field { display: flex; flex-direction: column; gap: 4px; }
+
+  .field label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .field input, .field select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 9px 10px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .field input:focus, .field select:focus {
+    border-color: var(--accent);
+  }
+
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b8cae' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+    cursor: pointer;
+  }
+
+  .field select option {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  /* Checkbox field for Training */
+  .checkbox-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0 2px;
+  }
+
+  .checkbox-field input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .checkbox-field label {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    cursor: pointer;
+  }
+
+  /* Flight info row - special layout */
+  .flight-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .route-arrow {
+    color: var(--accent);
+    font-size: 18px;
+    text-align: center;
+    padding-top: 18px;
+  }
+
+  /* Time pair */
+  .time-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  /* Crew section */
+  .crew-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .crew-item {
+    display: grid;
+    grid-template-columns: 80px 1fr 120px;
+    gap: 8px;
+    align-items: end;
+  }
+
+  /* Submit */
+  .submit-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .submit-btn {
+    flex: 1;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    padding: 13px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .submit-btn:active { transform: scale(0.98); }
+  .submit-btn:hover { background: #00d4f8; }
+
+  .submit-btn:disabled {
+    background: var(--border);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: var(--green);
+    color: #000;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 10px 20px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 100;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast.error {
+    background: #ef4444;
+    color: #fff;
+  }
+
+  /* Prefill highlight — briefly flash fields that were prefilled */
+  @keyframes prefill-flash {
+    0% { border-color: var(--accent); background: #00b4d815; }
+    100% { border-color: var(--border); background: var(--surface2); }
+  }
+
+  .prefilled {
+    animation: prefill-flash 1.2s ease forwards;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+    <path d="M12 19l-7-7 1.5-1.5L11 15V3h2v12l4.5-4.5L19 12l-7 7z" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M5 21h14" stroke-linecap="round"/>
+  </svg>
+  <div>
+    <div class="header-title">Flight Log Verification</div>
+    <div class="header-sub">Review · Edit · Submit</div>
+  </div>
+  <div class="status-dot"></div>
+</div>
+
+<div class="container">
+
+  <!-- FLIGHT INFO -->
+  <div class="section">
+    <div class="section-label">Flight Info</div>
+    <div class="card">
+      <div class="grid-2" style="margin-bottom:10px">
+        <div class="field">
+          <label>Date</label>
+          <input type="text" id="Date" placeholder="DD/MM/YYYY">
+        </div>
+        <div class="field">
+          <label>Flight No.</label>
+          <input type="text" id="Flight_no" placeholder="IZ 0164">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Aircraft</label>
+          <input type="text" id="ACFT" placeholder="4XAGV">
+        </div>
+        <div class="field" style="justify-content:flex-end">
+          <div class="checkbox-field">
+            <input type="checkbox" id="Training">
+            <label for="Training">Training flight</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROUTE -->
+  <div class="section">
+    <div class="section-label">Route</div>
+    <div class="card">
+      <div class="flight-row" style="margin-bottom:10px">
+        <div class="field">
+          <label>Origin ICAO</label>
+          <input type="text" id="Origin_ICAO" placeholder="LCLK">
+        </div>
+        <div class="route-arrow">→</div>
+        <div class="field">
+          <label>Dest ICAO</label>
+          <input type="text" id="Dest_ICAO" placeholder="LLBG">
+        </div>
+      </div>
+      <div class="flight-row">
+        <div class="field">
+          <label>Origin IATA</label>
+          <input type="text" id="Origin_IATA" placeholder="LCA">
+        </div>
+        <div class="route-arrow">→</div>
+        <div class="field">
+          <label>Dest IATA</label>
+          <input type="text" id="Dest_IATA" placeholder="TLV">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMES -->
+  <div class="section">
+    <div class="section-label">Times (UTC)</div>
+    <div class="card">
+      <div class="grid-2" style="margin-bottom:10px">
+        <div class="field">
+          <label>Planned DEP</label>
+          <div class="time-pair">
+            <input type="text" id="Planned_DEP_date" placeholder="DD/MM/YYYY">
+            <input type="text" id="Planned_DEP_time" placeholder="HH:MM">
+          </div>
+        </div>
+        <div class="field">
+          <label>Planned ARR</label>
+          <div class="time-pair">
+            <input type="text" id="Planned_ARR_date" placeholder="DD/MM/YYYY">
+            <input type="text" id="Planned_ARR_time" placeholder="HH:MM">
+          </div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Actual DEP</label>
+          <div class="time-pair">
+            <input type="text" id="Actual_DEP_date" placeholder="DD/MM/YYYY">
+            <input type="text" id="Actual_DEP_time" placeholder="HH:MM">
+          </div>
+        </div>
+        <div class="field">
+          <label>Actual ARR</label>
+          <div class="time-pair">
+            <input type="text" id="Actual_ARR_date" placeholder="DD/MM/YYYY">
+            <input type="text" id="Actual_ARR_time" placeholder="HH:MM">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LANDING -->
+  <div class="section">
+    <div class="section-label">Positions &amp; Landing</div>
+    <div class="card">
+      <div class="grid-3" style="margin-bottom:10px">
+        <div class="field">
+          <label>Position</label>
+          <select id="Position">
+            <option value="">—</option>
+            <option value="FO">FO</option>
+            <option value="FC">FC</option>
+            <option value="DH">DH</option>
+            <option value="PIC">PIC</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>T/O Position</label>
+          <select id="TO_position">
+            <option value="">—</option>
+            <option value="PF">PF</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>LND Day/Night</label>
+          <select id="LND_day_night">
+            <option value="">—</option>
+            <option value="Day">Day</option>
+            <option value="Night">Night</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label>LND Position</label>
+          <select id="LND_position">
+            <option value="">—</option>
+            <option value="PF">PF</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>LND Type</label>
+          <select id="LND_type">
+            <option value="">—</option>
+            <option value="VIS">VIS</option>
+            <option value="ILS CAT I">ILS CAT I</option>
+            <option value="ILS CAT II">ILS CAT II</option>
+            <option value="ILS CAT III">ILS CAT III</option>
+            <option value="RNAV">RNAV</option>
+            <option value="NON-PREC">NON-PREC</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREW -->
+  <div class="section">
+    <div class="section-label">Crew</div>
+    <div class="card">
+      <div class="crew-list">
+        <div class="field">
+          <label>CM (Captain)</label>
+          <input type="text" id="CM" placeholder="Full name">
+        </div>
+        <div class="field">
+          <label>Extra CM 1</label>
+          <input type="text" id="extraCM1" placeholder="Full name">
+        </div>
+        <div class="field">
+          <label>Extra CM 2</label>
+          <input type="text" id="extraCM2" placeholder="Full name">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:70px"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="submit-bar">
+  <button class="submit-btn" id="submitBtn" onclick="submitForm()">
+    ✓ &nbsp; Confirm &amp; Submit to Logbook
+  </button>
+</div>
+
+<script>
+const WEBHOOK_URL = 'https://hook.eu1.make.com/im1x8ft1az331wqj0lkmjukuq3axqlrk';
+
+const FIELDS = [
+  'Date','Flight_no','ACFT','Origin_ICAO','Dest_ICAO',
+  'Origin_IATA','Dest_IATA','Planned_DEP_date','Planned_DEP_time',
+  'Planned_ARR_date','Planned_ARR_time','Actual_DEP_date','Actual_DEP_time',
+  'Actual_ARR_date','Actual_ARR_time','Position','TO_position',
+  'LND_day_night','LND_position','LND_type','CM','extraCM1','extraCM2'
+];
+
+// Parse URL params and prefill fields
+function prefill() {
+  const params = new URLSearchParams(window.location.search);
+
+  FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const val = params.get(id);
+    if (val !== null && val !== '') {
+      if (el.tagName === 'SELECT') {
+        // Try to match option value
+        const opt = [...el.options].find(o => o.value === val);
+        if (opt) {
+          el.value = val;
+          el.classList.add('prefilled');
+        }
+      } else {
+        el.value = val;
+        el.classList.add('prefilled');
+      }
+    }
+  });
+
+  // Training checkbox — expects "1" or "0"
+  const training = params.get('Training');
+  const cb = document.getElementById('Training');
+  if (training === '1') { cb.checked = true; cb.classList.add('prefilled'); }
+}
+
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => { t.className = 'toast'; }, 3500);
+}
+
+async function submitForm() {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  const payload = {};
+  FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    payload[id] = el ? el.value.trim() : '';
+  });
+  payload['Training'] = document.getElementById('Training').checked ? '1' : '0';
+
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      showToast('✓ Submitted — entry sent to logbook');
+      btn.textContent = '✓ Submitted';
+    } else {
+      throw new Error('Server error ' + res.status);
+    }
+  } catch (err) {
+    showToast('✗ Submission failed — check connection', true);
+    btn.disabled = false;
+    btn.textContent = '✓  Confirm & Submit to Logbook';
+  }
+}
+
+prefill();
+</script>
+</body>
+</html>
