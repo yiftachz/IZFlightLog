@@ -279,7 +279,7 @@
       </div>
       <div class="field">
         <label>Flight No.</label>
-        <input type="text" name="Flight_no" id="f_Flight_no" placeholder="IZ 0164">
+        <input type="text" name="Flight_no" id="f_Flight_no" placeholder="IZ 0000">
       </div>
     </div>
     <div class="grid-2">
@@ -315,21 +315,21 @@
     <div class="grid-2">
       <div class="field">
         <label>Origin ICAO</label>
-        <input type="text" name="Origin_ICAO" id="f_Origin_ICAO" placeholder="LCLK" class="uppercase" maxlength="4">
+        <input type="text" name="Origin_ICAO" id="f_Origin_ICAO" placeholder="----" class="uppercase" maxlength="4">
       </div>
       <div class="field">
         <label>Dest ICAO</label>
-        <input type="text" name="Dest_ICAO" id="f_Dest_ICAO" placeholder="LLBG" class="uppercase" maxlength="4">
+        <input type="text" name="Dest_ICAO" id="f_Dest_ICAO" placeholder="----" class="uppercase" maxlength="4">
       </div>
     </div>
     <div class="grid-2">
       <div class="field">
         <label>Origin IATA</label>
-        <input type="text" name="Origin_IATA" id="f_Origin_IATA" placeholder="LCA" class="uppercase" maxlength="3">
+        <input type="text" name="Origin_IATA" id="f_Origin_IATA" placeholder="---" class="uppercase" maxlength="3">
       </div>
       <div class="field">
         <label>Dest IATA</label>
-        <input type="text" name="Dest_IATA" id="f_Dest_IATA" placeholder="TLV" class="uppercase" maxlength="3">
+        <input type="text" name="Dest_IATA" id="f_Dest_IATA" placeholder="---" class="uppercase" maxlength="3">
       </div>
     </div>
   </div>
@@ -344,7 +344,7 @@
       </div>
       <div class="field">
         <label>DEP Time</label>
-        <input type="text" name="Planned_DEP_time" id="f_Planned_DEP_time" placeholder="03:30" maxlength="5" inputmode="numeric">
+        <input type="text" name="Planned_DEP_time" id="f_Planned_DEP_time" placeholder="00:00" maxlength="5" inputmode="numeric">
       </div>
     </div>
     <div class="grid-2">
@@ -354,7 +354,7 @@
       </div>
       <div class="field">
         <label>ARR Time</label>
-        <input type="text" name="Planned_ARR_time" id="f_Planned_ARR_time" placeholder="04:30" maxlength="5" inputmode="numeric">
+        <input type="text" name="Planned_ARR_time" id="f_Planned_ARR_time" placeholder="00:00" maxlength="5" inputmode="numeric">
       </div>
     </div>
     <div class="pair-label">Actual</div>
@@ -365,7 +365,7 @@
       </div>
       <div class="field">
         <label>DEP Time</label>
-        <input type="text" name="Actual_DEP_time" id="f_Actual_DEP_time" placeholder="03:51" maxlength="5" inputmode="numeric">
+        <input type="text" name="Actual_DEP_time" id="f_Actual_DEP_time" placeholder="00:00" maxlength="5" inputmode="numeric">
       </div>
     </div>
     <div class="grid-2">
@@ -375,7 +375,7 @@
       </div>
       <div class="field">
         <label>ARR Time</label>
-        <input type="text" name="Actual_ARR_time" id="f_Actual_ARR_time" placeholder="04:44" maxlength="5" inputmode="numeric">
+        <input type="text" name="Actual_ARR_time" id="f_Actual_ARR_time" placeholder="00:00" maxlength="5" inputmode="numeric">
       </div>
     </div>
   </div>
@@ -476,10 +476,13 @@
   const WEBHOOK = 'https://hook.eu1.make.com/im1x8ft1az331wqj0lkmjukuq3axqlrk';
   const params = new URLSearchParams(window.location.search);
 
-  // --- NEW: Generate Manual ID Function ---
+  // Helper for Date/Time defaults
+  const pad = (n) => n.toString().padStart(2, '0');
+  const now = new Date();
+  const todayISO = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const nowTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
   function generateManualID() {
-    const now = new Date();
-    const pad = (n) => n.toString().padStart(2, '0');
     const yyyy = now.getFullYear();
     const mm = pad(now.getMonth() + 1);
     const dd = pad(now.getDate());
@@ -516,132 +519,4 @@
 
   function timeInputHandler(e) {
     let v = e.target.value.replace(/[^0-9]/g, '');
-    if (v.length >= 3) v = v.slice(0,2) + ':' + v.slice(2,4);
-    e.target.value = v;
-  }
-
-  const dateFields = ['Date','Planned_DEP_date','Planned_ARR_date','Actual_DEP_date','Actual_ARR_date'];
-  const timeFields = ['Planned_DEP_time','Planned_ARR_time','Actual_DEP_time','Actual_ARR_time'];
-  const textFields = ['Flight_no','Origin_ICAO','Dest_ICAO','Origin_IATA','Dest_IATA','CM','extraCM1','extraCM2'];
-  const selectFields = ['ACFT','Position','TO_position','LND_day_night','LND_position','LND_type'];
-
-  // --- NEW: Handle Make_ID Logic ---
-  let makeId = params.get('Make_ID');
-  if (!makeId) {
-    makeId = generateManualID();
-  }
-  document.getElementById('f_Make_ID').value = makeId;
-
-  // Prefill dates
-  dateFields.forEach(key => {
-    const val = params.get(key);
-    if (val) { const el = document.getElementById('f_'+key); if (el) el.value = toISODate(val); }
-  });
-
-  // Prefill times
-  timeFields.forEach(key => {
-    const val = params.get(key);
-    if (val) { const el = document.getElementById('f_'+key); if (el) el.value = val.substring(0,5); }
-  });
-
-  // Prefill text
-  textFields.forEach(key => {
-    const val = params.get(key);
-    if (val !== null) { const el = document.getElementById('f_'+key); if (el) el.value = val; }
-  });
-
-  // Prefill selects
-  selectFields.forEach(key => {
-    const val = params.get(key);
-    if (val !== null) {
-      const el = document.getElementById('f_'+key);
-      if (el) {
-        const match = Array.from(el.options).find(o => o.value.toLowerCase() === val.toLowerCase());
-        if (match) el.value = match.value;
-      }
-    }
-  });
-
-  const trainingCb = document.getElementById('f_Training');
-  const toggleEl = document.getElementById('toggle_Training');
-  function syncToggle() { toggleEl.classList.toggle('on', trainingCb.checked); }
-  trainingCb.addEventListener('change', syncToggle);
-  if (params.get('Training') === '1') { trainingCb.checked = true; syncToggle(); }
-
-  ['f_Origin_ICAO','f_Dest_ICAO','f_Origin_IATA','f_Dest_IATA'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('input', () => { el.value = el.value.toUpperCase(); });
-  });
-
-  timeFields.forEach(key => {
-    const el = document.getElementById('f_'+key);
-    if (el) el.addEventListener('input', timeInputHandler);
-  });
-
-  function clearCrew(id) {
-    const el = document.getElementById(id);
-    if (el) { el.value = ''; el.focus(); }
-  }
-
-  const flightNo = params.get('Flight_no') || '';
-  const date = params.get('Date') || '';
-  const origin = params.get('Origin_IATA') || params.get('Origin_ICAO') || '';
-  const dest = params.get('Dest_IATA') || params.get('Dest_ICAO') || '';
-  if (flightNo || date) {
-    document.getElementById('header-flight').textContent =
-      [flightNo, origin && dest ? origin+' → '+dest : '', date].filter(Boolean).join(' · ');
-  }
-
-  document.getElementById('logform').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const invalidTimes = timeFields.filter(key => {
-      const el = document.getElementById('f_'+key);
-      return el && el.value && !isValidTime(el.value);
-    });
-    if (invalidTimes.length) {
-      const status = document.getElementById('statusMsg');
-      status.textContent = '✗ Invalid time format — use HH:MM (e.g. 03:30)';
-      status.className = 'status error';
-      return;
-    }
-
-    const btn = document.getElementById('submitBtn');
-    const status = document.getElementById('statusMsg');
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
-    status.className = 'status';
-
-    const data = {};
-    // Add Make_ID to payload
-    data['Make_ID'] = document.getElementById('f_Make_ID').value;
-    
-    dateFields.forEach(key => { data[key] = fromISODate(document.getElementById('f_'+key).value); });
-    timeFields.forEach(key => { data[key] = document.getElementById('f_'+key).value; });
-    textFields.forEach(key => { data[key] = document.getElementById('f_'+key).value.trim(); });
-    selectFields.forEach(key => { data[key] = document.getElementById('f_'+key).value; });
-    data['Training'] = trainingCb.checked ? '1' : '0';
-
-    try {
-      const res = await fetch(WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (res.ok) {
-        status.textContent = '✓ Submitted successfully';
-        status.className = 'status success';
-        btn.textContent = 'Submitted ✓';
-      } else {
-        throw new Error('Server error ' + res.status);
-      }
-    } catch(err) {
-      status.textContent = '✗ Failed to send — check connection';
-      status.className = 'status error';
-      btn.disabled = false;
-      btn.textContent = 'Submit to Logbook';
-    }
-  });
-</script>
-</body>
-</html>
+    if (v.length >= 3) v = v.slice(0,2)
