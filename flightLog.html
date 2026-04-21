@@ -12,35 +12,42 @@
     --success: #10b981; --mono: 'Share Tech Mono', monospace; --sans: 'Barlow', sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; padding-bottom: 60px; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-weight: 400; min-height: 100vh; padding: 0 0 60px 0; }
   .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 20px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; gap: 12px; }
-  .header-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .header-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
   .header-title { font-family: var(--mono); font-size: 13px; color: var(--accent2); letter-spacing: 0.08em; text-transform: uppercase; }
   .header-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
   .section { padding: 0 16px; margin-top: 20px; }
   .section-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); padding: 0 4px 8px 4px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
   .field { margin-bottom: 10px; }
-  .field label { display: block; font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
-  .field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 15px; padding: 10px 12px; outline: none; color-scheme: dark; }
+  .field label { display: block; font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; padding-left: 2px; }
+  .field input[type="text"], .field input[type="date"], .field input[type="time"] { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 15px; padding: 10px 12px; outline: none; transition: border-color 0.15s; -webkit-appearance: none; appearance: none; color-scheme: dark; }
+  .field input[type="text"]:focus, .field input[type="date"]:focus, .field input[type="time"]:focus { border-color: var(--accent); }
+  .field input.uppercase { text-transform: uppercase; }
   .custom-select-wrap { position: relative; }
-  .custom-select-wrap select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 15px; padding: 10px 12px; outline: none; -webkit-appearance: none; appearance: none; color-scheme: dark; }
+  .custom-select-wrap::after { content: ''; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid var(--muted); pointer-events: none; }
+  .custom-select-wrap select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 15px; padding: 10px 32px 10px 12px; outline: none; transition: border-color 0.15s; -webkit-appearance: none; appearance: none; color-scheme: dark; cursor: pointer; }
+  .custom-select-wrap select:focus { border-color: var(--accent); }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .grid-lnd { display: grid; grid-template-columns: 1fr 0.7fr 1.3fr; gap: 10px; }
   .toggle-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; height: 43px; }
-  .toggle { position: relative; width: 44px; height: 24px; }
-  .toggle input { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2; }
-  .toggle-track { position: absolute; inset: 0; background: var(--border); border-radius: 12px; transition: 0.2s; }
-  .toggle-thumb { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: 0.2s; }
+  .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+  .toggle input[type="checkbox"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
+  .toggle-track { position: absolute; inset: 0; background: var(--border); border-radius: 12px; transition: background 0.2s; pointer-events: none; z-index: 0; }
+  .toggle-thumb { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: transform 0.2s; pointer-events: none; z-index: 1; }
   .toggle.on .toggle-track { background: var(--accent); }
   .toggle.on .toggle-thumb { transform: translateX(20px); }
   .crew-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .crew-row { display: flex; align-items: center; border-bottom: 1px solid var(--border); }
-  .crew-tag { font-family: var(--mono); font-size: 10px; color: var(--accent); width: 52px; text-align: center; }
-  .crew-input { flex: 1; background: transparent; border: none; border-left: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 15px; padding: 11px 12px; outline: none; }
-  .submit-btn { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-family: var(--mono); font-size: 14px; padding: 16px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; }
-  .status { text-align: center; font-family: var(--mono); font-size: 13px; margin-top: 15px; display: none; }
+  .crew-tag { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.1em; padding: 0 10px; width: 52px; flex-shrink: 0; }
+  .crew-input { flex: 1; background: transparent; border: none; border-left: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 15px; padding: 11px 8px 11px 12px; outline: none; }
+  .crew-clear { background: none; border: none; color: var(--muted); font-size: 16px; padding: 0 12px; cursor: pointer; }
+  .submit-wrap { padding: 24px 16px 0; }
+  .submit-btn { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-family: var(--mono); font-size: 14px; padding: 16px; cursor: pointer; text-transform: uppercase; }
+  .status { text-align: center; font-family: var(--mono); font-size: 13px; padding: 12px 16px 0; display: none; }
   .status.success { color: var(--success); display: block; }
   .status.error { color: #f87171; display: block; }
+  .pair-label { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; padding: 10px 2px 4px; }
 </style>
 </head>
 <body>
@@ -49,7 +56,7 @@
   <div class="header-icon">✈</div>
   <div>
     <div class="header-title">Flight Log Verification</div>
-    <div class="header-sub" id="header-flight">Review &amp; Confirm Data</div>
+    <div class="header-sub" id="header-flight">Review &amp; confirm Gemini output</div>
   </div>
 </div>
 
@@ -80,8 +87,7 @@
           <span style="font-size:12px; color:var(--muted)">Training flt</span>
           <div class="toggle" id="toggle_Training">
             <input type="checkbox" id="f_Training" name="Training" value="1">
-            <div class="toggle-track"></div>
-            <div class="toggle-thumb"></div>
+            <div class="toggle-track"></div><div class="toggle-thumb"></div>
           </div>
         </div>
       </div>
@@ -91,54 +97,77 @@
   <div class="section">
     <div class="section-label">Route</div>
     <div class="grid-2">
-      <div class="field"><label>Origin ICAO</label><input type="text" name="Origin_ICAO" id="f_Origin_ICAO" maxlength="4"></div>
-      <div class="field"><label>Dest ICAO</label><input type="text" name="Dest_ICAO" id="f_Dest_ICAO" maxlength="4"></div>
+      <div class="field"><label>Origin ICAO</label><input type="text" name="Origin_ICAO" id="f_Origin_ICAO" maxlength="4" class="uppercase"></div>
+      <div class="field"><label>Dest ICAO</label><input type="text" name="Dest_ICAO" id="f_Dest_ICAO" maxlength="4" class="uppercase"></div>
     </div>
     <div class="grid-2">
-      <div class="field"><label>Origin IATA</label><input type="text" name="Origin_IATA" id="f_Origin_IATA" maxlength="3"></div>
-      <div class="field"><label>Dest IATA</label><input type="text" name="Dest_IATA" id="f_Dest_IATA" maxlength="3"></div>
+      <div class="field"><label>Origin IATA</label><input type="text" name="Origin_IATA" id="f_Origin_IATA" maxlength="3" class="uppercase"></div>
+      <div class="field"><label>Dest IATA</label><input type="text" name="Dest_IATA" id="f_Dest_IATA" maxlength="3" class="uppercase"></div>
     </div>
   </div>
 
   <div class="section">
-    <div class="section-label">Times (Actual)</div>
+    <div class="section-label">Times</div>
+    <div class="pair-label">Planned</div>
+    <div class="grid-2">
+      <div class="field"><label>DEP Date</label><input type="date" name="Planned_DEP_date" id="f_Planned_DEP_date"></div>
+      <div class="field"><label>DEP Time</label><input type="text" name="Planned_DEP_time" id="f_Planned_DEP_time" placeholder="00:00" maxlength="5"></div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>ARR Date</label><input type="date" name="Planned_ARR_date" id="f_Planned_ARR_date"></div>
+      <div class="field"><label>ARR Time</label><input type="text" name="Planned_ARR_time" id="f_Planned_ARR_time" placeholder="00:00" maxlength="5"></div>
+    </div>
+    <div class="pair-label">Actual</div>
     <div class="grid-2">
       <div class="field"><label>DEP Date</label><input type="date" name="Actual_DEP_date" id="f_Actual_DEP_date"></div>
-      <div class="field"><label>DEP Time</label><input type="text" name="Actual_DEP_time" id="f_Actual_DEP_time" placeholder="00:00"></div>
+      <div class="field"><label>DEP Time</label><input type="text" name="Actual_DEP_time" id="f_Actual_DEP_time" placeholder="00:00" maxlength="5"></div>
     </div>
     <div class="grid-2">
       <div class="field"><label>ARR Date</label><input type="date" name="Actual_ARR_date" id="f_Actual_ARR_date"></div>
-      <div class="field"><label>ARR Time</label><input type="text" name="Actual_ARR_time" id="f_Actual_ARR_time" placeholder="00:00"></div>
+      <div class="field"><label>ARR Time</label><input type="text" name="Actual_ARR_time" id="f_Actual_ARR_time" placeholder="00:00" maxlength="5"></div>
     </div>
   </div>
 
   <div class="section">
-    <div class="section-label">Positions</div>
+    <div class="section-label">Positions &amp; Landing</div>
     <div class="grid-2">
       <div class="field">
         <label>Position</label>
-        <div class="custom-select-wrap"><select name="Position" id="f_Position"><option value="">--</option><option value="FO">FO</option><option value="FC">FC</option><option value="DH">DH</option><option value="PIC">PIC</option></select></div>
+        <div class="custom-select-wrap">
+          <select name="Position" id="f_Position">
+            <option value="">--</option><option value="FO">FO</option><option value="FC">FC</option><option value="DH">DH</option><option value="PIC">PIC</option>
+          </select>
+        </div>
       </div>
       <div class="field">
-        <label>T/O Pos</label>
-        <div class="custom-select-wrap"><select name="TO_position" id="f_TO_position"><option value="">--</option><option value="PF">PF</option><option value="PM">PM</option></select></div>
+        <label>T/O Position</label>
+        <div class="custom-select-wrap">
+          <select name="TO_position" id="f_TO_position">
+            <option value="">--</option><option value="PF">PF</option><option value="PM">PM</option>
+          </select>
+        </div>
       </div>
+    </div>
+    <div class="grid-lnd">
+      <div class="field"><label>Day/Night</label><div class="custom-select-wrap"><select name="LND_day_night" id="f_LND_day_night"><option value="">--</option><option value="Day">Day</option><option value="Night">Night</option></select></div></div>
+      <div class="field"><label>LND Pos</label><div class="custom-select-wrap"><select name="LND_position" id="f_LND_position"><option value="">--</option><option value="PF">PF</option><option value="PM">PM</option></select></div></div>
+      <div class="field"><label>LND Type</label><div class="custom-select-wrap"><select name="LND_type" id="f_LND_type"><option value="">--</option><option value="VIS">VIS</option><option value="ILS CAT I">CAT I</option><option value="ILS CAT II">CAT II</option><option value="ILS CAT III">CAT III</option><option value="RNAV">RNAV</option><option value="NON-PREC">NON-PREC</option></select></div></div>
     </div>
   </div>
 
   <div class="section">
     <div class="section-label">Crew</div>
     <div class="crew-block">
-      <div class="crew-row"><span class="crew-tag">CM</span><input class="crew-input" type="text" name="CM" id="f_CM" placeholder="Captain"></div>
-      <div class="crew-row"><span class="crew-tag">CM1</span><input class="crew-input" type="text" name="extraCM1" id="f_extraCM1"></div>
-      <div class="crew-row"><span class="crew-tag">CM2</span><input class="crew-input" type="text" name="extraCM2" id="f_extraCM2"></div>
+      <div class="crew-row"><span class="crew-tag">CM</span><input class="crew-input" type="text" name="CM" id="f_CM" placeholder="Captain"><button type="button" class="crew-clear" onclick="clearCrew('f_CM')">✕</button></div>
+      <div class="crew-row"><span class="crew-tag">CM1</span><input class="crew-input" type="text" name="extraCM1" id="f_extraCM1"><button type="button" class="crew-clear" onclick="clearCrew('f_extraCM1')">✕</button></div>
+      <div class="crew-row"><span class="crew-tag">CM2</span><input class="crew-input" type="text" name="extraCM2" id="f_extraCM2"><button type="button" class="crew-clear" onclick="clearCrew('f_extraCM2')">✕</button></div>
     </div>
   </div>
 
-  <div style="padding: 0 16px;">
+  <div class="submit-wrap">
     <button type="submit" class="submit-btn" id="submitBtn">Submit to Logbook</button>
-    <div class="status" id="statusMsg"></div>
   </div>
+  <div class="status" id="statusMsg"></div>
 </form>
 
 <script>
@@ -146,9 +175,13 @@
   const params = new URLSearchParams(window.location.search);
   const now = new Date();
   const pad = (n) => n.toString().padStart(2, '0');
-  
   const todayISO = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
   const nowTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  function getVal(key, defaultValue) {
+    const val = params.get(key);
+    return (val !== null && val !== "") ? val : defaultValue;
+  }
 
   function toISODate(str) {
     if (!str || !str.includes('/')) return str;
@@ -156,74 +189,74 @@
     return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
   }
 
-  // --- LOGIC FIX: Check if key exists in URL strictly ---
-  function getVal(key, defaultValue) {
-    if (params.has(key) && params.get(key) !== "") {
-      return params.get(key);
-    }
-    return defaultValue;
+  function fromISODate(str) {
+    if (!str || !str.includes('-')) return str;
+    const [y, m, d] = str.split('-');
+    return `${d}/${m}/${y}`;
   }
 
-  // Set Make_ID
-  document.getElementById('f_Make_ID').value = getVal('Make_ID', `MAN_${todayISO.replace(/-/g,'')}${nowTime.replace(/:/g,'')}${pad(now.getSeconds())}`);
+  // Set ID
+  document.getElementById('f_Make_ID').value = getVal('Make_ID', `MAN_${todayISO.replace(/-/g,'')}_${nowTime.replace(/:/g,'')}`);
 
-  // Apply Defaults
-  document.getElementById('f_Date').value = toISODate(getVal('Date', todayISO));
-  document.getElementById('f_Actual_DEP_date').value = toISODate(getVal('Actual_DEP_date', todayISO));
-  document.getElementById('f_Actual_ARR_date').value = toISODate(getVal('Actual_ARR_date', todayISO));
-  
-  document.getElementById('f_Actual_DEP_time').value = getVal('Actual_DEP_time', nowTime);
-  document.getElementById('f_Actual_ARR_time').value = getVal('Actual_ARR_time', nowTime);
-  
-  document.getElementById('f_Flight_no').value = getVal('Flight_no', 'IZ 0000');
-  document.getElementById('f_Origin_ICAO').value = getVal('Origin_ICAO', '----');
-  document.getElementById('f_Dest_ICAO').value = getVal('Dest_ICAO', '----');
-  document.getElementById('f_Origin_IATA').value = getVal('Origin_IATA', '---');
-  document.getElementById('f_Dest_IATA').value = getVal('Dest_IATA', '---');
+  // Field definitions
+  const dateFields = ['Date','Planned_DEP_date','Planned_ARR_date','Actual_DEP_date','Actual_ARR_date'];
+  const timeFields = ['Planned_DEP_time','Planned_ARR_time','Actual_DEP_time','Actual_ARR_time'];
+  const airportFields = ['Origin_ICAO','Dest_ICAO','Origin_IATA','Dest_IATA'];
+  const textFields = ['Flight_no','CM','extraCM1','extraCM2'];
+  const selectFields = ['ACFT','Position','TO_position','LND_day_night','LND_position','LND_type'];
 
-  // Fill remaining text fields
-  ['CM', 'extraCM1', 'extraCM2'].forEach(id => {
-    document.getElementById('f_' + id).value = getVal(id, '');
+  // Apply Strict Defaults
+  dateFields.forEach(f => document.getElementById('f_'+f).value = toISODate(getVal(f, todayISO)));
+  timeFields.forEach(f => document.getElementById('f_'+f).value = getVal(f, nowTime).substring(0,5));
+  airportFields.forEach(f => document.getElementById('f_'+f).value = getVal(f, f.includes('IATA') ? '---' : '----'));
+  textFields.forEach(f => document.getElementById('f_'+f).value = getVal(f, f === 'Flight_no' ? 'IZ 0000' : ''));
+  
+  selectFields.forEach(f => {
+    const val = getVal(f, '');
+    const el = document.getElementById('f_'+f);
+    if (val && el) {
+      const match = Array.from(el.options).find(o => o.value.toLowerCase() === val.toLowerCase());
+      if (match) el.value = match.value;
+    }
   });
 
-  // Fill Selects
-  ['ACFT', 'Position', 'TO_position'].forEach(id => {
-    const val = getVal(id, '');
-    const el = document.getElementById('f_' + id);
-    if (val && el) el.value = val;
-  });
-
-  // Toggle Setup
+  // Toggle
   const trainingCb = document.getElementById('f_Training');
   const toggleEl = document.getElementById('toggle_Training');
-  if (getVal('Training', '0') === '1') {
-    trainingCb.checked = true;
-    toggleEl.classList.add('on');
-  }
+  if (getVal('Training', '0') === '1') { trainingCb.checked = true; toggleEl.classList.add('on'); }
   trainingCb.addEventListener('change', () => toggleEl.classList.toggle('on', trainingCb.checked));
 
-  // Submission
-  document.getElementById('logform').addEventListener('submit', async (e) => {
+  // Auto-colon & Uppercase
+  timeFields.forEach(f => document.getElementById('f_'+f).addEventListener('input', (e) => {
+    let v = e.target.value.replace(/[^0-9]/g, '');
+    if (v.length >= 3) v = v.slice(0,2) + ':' + v.slice(2,4);
+    e.target.value = v;
+  }));
+  airportFields.forEach(f => document.getElementById('f_'+f).addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase()));
+
+  function clearCrew(id) { const el = document.getElementById(id); el.value = ''; el.focus(); }
+
+  // Submit logic
+  document.getElementById('logform').addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('submitBtn');
     const status = document.getElementById('statusMsg');
     btn.disabled = true; btn.textContent = 'Sending...';
 
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-    data.Training = trainingCb.checked ? '1' : '0';
+    const data = {};
+    const formData = new FormData(this);
+    formData.forEach((value, key) => {
+      if (dateFields.includes(key)) data[key] = fromISODate(value);
+      else data[key] = value;
+    });
+    data['Training'] = trainingCb.checked ? '1' : '0';
 
     try {
-      const res = await fetch(WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (res.ok) {
-        status.textContent = '✓ Logged to Sheets'; status.className = 'status success';
-      } else { throw new Error(); }
-    } catch (err) {
-      status.textContent = '✗ Error sending data'; status.className = 'status error';
+      const res = await fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      if (res.ok) { status.textContent = '✓ Submitted to Logbook'; status.className = 'status success'; }
+      else throw new Error();
+    } catch(err) {
+      status.textContent = '✗ Submission failed'; status.className = 'status error';
       btn.disabled = false; btn.textContent = 'Retry Submission';
     }
   });
